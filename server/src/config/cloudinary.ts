@@ -1,19 +1,18 @@
 // cloudinary.ts
-// Product photo lives on cloudinary, a service that stores picture and serves them quickly from anywhere in the world This file logs in to cloudinary once and has small helpers for photo addresses
+// Product photos live on Cloudinary, a service that stores pictures
+// and serves them quickly from anywhere in the world.
+// This file logs in to Cloudinary once and has small helpers for photo addresses.
 
+import "dotenv/config";
 import { env } from "node:process";
 import { v2 as cloudinary } from "cloudinary";
-import { bytes } from "node:stream/consumers";
-import { error } from "node:console";
-import { resourceLimits } from "node:worker_threads";
 
-// Every product photo is kept in the "quickcart/product" folder:
+// Every product photo is kept in the "quickcart/products" folder.
 
 export const PHOTO_FOLDER = "quickcart/products";
 export const UPLOAD_FOLDER = `${PHOTO_FOLDER}/uploads`;
 
-// Store product photos on Cloudinary
-// Log into cloudinary with the 3 settings from .env, and build photo addresses. f_auto, q_auto in an address asks cloudinary for the best format and size for each brouser, so photos loads faster.
+// Store product photos on Cloudinary.
 
 export const isCloudinaryReady = Boolean(
   env.CLOUDINARY_CLOUD_NAME &&
@@ -21,7 +20,8 @@ export const isCloudinaryReady = Boolean(
   env.CLOUDINARY_API_SECRET,
 );
 
-// What to do when the cloudinary settings are missing
+// What to do when the Cloudinary settings are missing.
+
 export const CLOUDINARY_MISSING =
   "Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET to server/.env.";
 
@@ -29,24 +29,27 @@ cloudinary.config({
   cloud_name: env.CLOUDINARY_CLOUD_NAME,
   api_key: env.CLOUDINARY_API_KEY,
   api_secret: env.CLOUDINARY_API_SECRET,
-  secure: true, // http addresses
+  secure: true,
 });
 
-// The start of every product photo address. e.g "http://res.cloudinary.com/my-cloud/image/upload/f_auto,q_auto/"
+// The start of every product photo address.
+
 const PHOTO_URL_START = `https://res.cloudinary.com/${env.CLOUDINARY_CLOUD_NAME}/image/upload/f_auto,q_auto/`;
 
-// "quickcart/products/smart-watch-ultral" -> "http://res.cloudinary.com/my-cloud/images/upload/f_auto,q_auto/quickcart/product/smart-watch-ultra"
+// Build a Cloudinary photo address.
 
-export const photourl = (publicId: string) => {
+export const photoUrl = (publicId: string) => {
   return PHOTO_URL_START + publicId;
 };
-//  The photo of a demo product, from its slug: "smart-watch-ultra" -> its cloudinary address
 
-export const productPhotourl = (slug: string) => {
-  return photourl(`${PHOTO_FOLDER}/${slug}`);
+// The photo of a demo product, from its slug.
+
+export const productPhotoUrl = (slug: string) => {
+  return photoUrl(`${PHOTO_FOLDER}/${slug}`);
 };
 
-// is this one of our own product photos? (an address in our cloudinary folder, nothing else)
+// Check if this is one of our own product photos.
+
 export const isOurPhoto = (url: string) => {
   if (
     !isCloudinaryReady ||
@@ -57,6 +60,8 @@ export const isOurPhoto = (url: string) => {
 
   return /^[\w/-]+$/.test(url.slice(PHOTO_URL_START.length));
 };
+
+// Get the public ID of an uploaded photo.
 
 export const uploadedPhotoId = (url: string) => {
   if (
@@ -69,7 +74,8 @@ export const uploadedPhotoId = (url: string) => {
   return url.slice(PHOTO_URL_START.length);
 };
 
-// Sends a photo (the files bytes) to cloudinary and returns its public id
+// Send a photo (the file bytes) to Cloudinary and return its public ID.
+
 export const uploadPhoto = (Bytes: Buffer, publicId: string) => {
   return new Promise<string>((resolve, reject) => {
     const upload = cloudinary.uploader.upload_stream(
@@ -92,14 +98,13 @@ export const uploadPhoto = (Bytes: Buffer, publicId: string) => {
   });
 };
 
-// Delete one photo from cloudinary (a missing photo is not an error)
-// export const delelte
+// Delete one photo from Cloudinary (a missing photo is not an error).
 
-// Delete one photo from cloudinary (a missing photo is not an error)
-export const deleteAllUpoadedPhotos = async () => {
+export const deleteAllUploadedPhotos = async () => {
   if (!isCloudinaryReady) {
     return;
   }
+
   await cloudinary.api
     .delete_resources_by_prefix(`${UPLOAD_FOLDER}/`)
     .catch(() => {});
