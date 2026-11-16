@@ -5,6 +5,7 @@ import { PHOTO_FOLDER, photoUrl } from "../config/cloudinary";
 import { categories } from "./categories";
 import { products, type SeedProduct } from "./products";
 import type { Types } from "mongoose";
+import { users } from "./users";
 
 // STEP 12: Put the demo data in the database (part 1: shape the records)
 // The data files use slugs and simple names; the database needs real IDs, full photo addresses and every field the model expects. These functions do that translation.
@@ -134,4 +135,9 @@ export const demoProducts = (
     }
     return buildProduct(items, categoryId, photoIds);
   });
+};
+
+// users.ts is already shaped like the User model. Passwords are hashed by the model when seed.ts saves them.
+export const demoUsers = () => {
+  return users;
 };

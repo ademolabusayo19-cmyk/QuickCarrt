@@ -1,24 +1,29 @@
-// ssed.ts
+// seed.ts
 // fills the database with demo data: npm run seed
-// Running it again wipes the demo collections and start fresh, so it's always safe to re-run
+// Running it again wipes the demo collections and starts fresh, so it's always safe to re-run
 
 import mongoose, { Types } from "mongoose";
 import { Category } from "../models/Category";
 import { Product } from "../models/Product";
-import { demoCategories, demoProducts } from "./demoData";
 import { listProductPhotoId } from "../config/cloudinary";
 import { products } from "./products";
 import { connectDB } from "../config/database";
+import { User } from "../models/User";
+import { demoCategories, demoProducts, demoUsers } from "./demoData";
 
 // STEP 12: The seed command
 // seedDatabase() does the work and is exported, so the demo panel can reuse it.
-// The bottom of the file run it only when you type npm run seed.
+// The bottom of the file runs it only when you type npm run seed.
 
 export const seedDatabase = async () => {
-  // 1. Empty the collection (both at the same with promise.all)
-  await Promise.all([Category.deleteMany({}), Product.deleteMany({})]);
+  // 1. Empty the collections
+  await Promise.all([
+    Category.deleteMany({}),
+    Product.deleteMany({}),
+    User.deleteMany({}),
+  ]);
 
-  // 2. Save the categories, then remenber each ones id by slug: "electonics" -> ObjectId(...)
+  // 2. Save the categories, then remember each one's id by slug: "electronics" -> ObjectId(...)
   const savedCategories = await Category.insertMany(demoCategories());
   const categoryIds = new Map<string, Types.ObjectId>(
     savedCategories.map((category) => {
@@ -26,8 +31,7 @@ export const seedDatabase = async () => {
     }),
   );
 
-  // 3.   Which photos are on cloudinary?
-
+  // 3. Which photos are on Cloudinary?
   const photoIds = await listProductPhotoId();
 
   // 4. Save the products
@@ -35,7 +39,7 @@ export const seedDatabase = async () => {
     demoProducts(categoryIds, photoIds),
   );
 
-  // 5. Link bundles and related products. product.ts usue names; we swap name for its id
+  // 5. Link bundles and related products. products.ts uses names; we swap names for their IDs.
   const productIds = new Map<string, Types.ObjectId>(
     savedProducts.map((product) => {
       return [product.name, product._id];
@@ -43,20 +47,20 @@ export const seedDatabase = async () => {
   );
 
   // ["Gold-plated 3.5mm AUX Cable", ...] -> [Object(...),...]
-  // A misspelt name stops the sesd with a clear message instead of silently droppimg the link
+  // A misspelled name stops the seed with a clear message instead of silently dropping the link.
   const idsFor = (names: string[] | undefined, owner: string) => {
     return (names ?? []).map((name) => {
       const id = productIds.get(name);
       if (!id) {
         throw new Error(
-          `"${owner}" links to a product that does'nt exist: "${name}"`,
+          `"${owner}" links to a product that doesn't exist: "${name}"`,
         );
       }
       return id;
     });
   };
 
-  // bulkwrite sends all 40 updates to mongodb in one trip instead of 40 seperate saves
+  // bulkWrite sends all updates to MongoDB in one trip instead of separate saves.
   await Product.bulkWrite(
     products.map((item) => {
       return {
@@ -73,10 +77,15 @@ export const seedDatabase = async () => {
     }),
   );
 
-  // 6. A summary for whoever ran the seed
+  // 6. Save the demo users. User.create (NOT insertMany): only create/save runs the model's
+  // pre("save") hook, which hashes the passwords. insertMany would store them as plain text!
+  const savedUsers = await User.create(demoUsers());
+
+  // 7. A summary for whoever ran the seed
   return {
     categories: savedCategories.length,
     products: savedProducts.length,
+    users: savedUsers.length,
     withoutPhotos: savedProducts
       .filter((product) => product.images.length === 0)
       .map((product) => product.name),
@@ -91,7 +100,7 @@ const runSeed = async () => {
     const result = await seedDatabase();
 
     console.log(
-      `Seeded ${result.categories} categories and ${result.products} products`,
+      `Seeded ${result.categories} categories, ${result.products} products and ${result.users} users`,
     );
 
     if (result.withoutPhotos.length > 0) {
