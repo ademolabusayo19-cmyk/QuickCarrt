@@ -6,6 +6,7 @@ import cors from "cors";
 import { env } from "./config/env";
 import routes from "./routes";
 import { notFound } from "./middleware/notFound";
+import { errorHandler } from "./middleware/errorHandler";
 
 // STEP 3: Create the Express app
 // The Express app: allow the website to call us (CORS), read JSON bodies, serve
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api", routes); // Every route lives under /api, e.g. /api/health
 
 app.use(notFound); // Must come after the routes: runs only when nothing above matched
+app.use(errorHandler); // must be last: catches rou
 
 export default app;
 // Next: STEP 4 (Handle unknown URLs and errors) -> server/src/middleware/notFound.ts

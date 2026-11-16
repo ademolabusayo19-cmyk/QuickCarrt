@@ -1,5 +1,6 @@
 // routes/index.ts
 // join all the route files together app.ts puts these under /api
+import categoryRoutes from "./categoryRoutes";
 
 import { Router } from "express";
 
@@ -12,6 +13,7 @@ const router = Router();
 router.get("health", (_req, res) => {
   res.json({ status: "ok", message: "Quickcart API is running" });
 });
+router.use("/categories", categoryRoutes); // /api/categories...
 
 export default router;
 // Next: Step 6 (start the server) -> server.
