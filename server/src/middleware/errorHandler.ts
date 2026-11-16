@@ -25,11 +25,11 @@ export const errorHandler = (
   // 2. A record broke the models rules (e.g require field missing, price below 0)
 
   if (error instanceof mongoose.Error.ValidationError) {
-    const message = Object.values(error.errors).map((field) => {
+    const messages = Object.values(error.errors).map((field) => {
       return field.message;
     });
 
-    return res.status(400).json({ message: message.join(". ") });
+    return res.status(400).json({ message: messages.join(". ") });
   }
 
   // 3. A badly formed id, e.g GET /api/products/123 ("123" is not a mongodb id)
