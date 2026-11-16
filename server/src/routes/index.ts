@@ -3,6 +3,8 @@
 import categoryRoutes from "./categoryRoutes";
 
 import { Router } from "express";
+import accountRoutes from "./accountRoutes";
+
 import productRoutes from "./productRoutes";
 
 // STEP 5: join the routes and add a health check
@@ -16,6 +18,7 @@ router.get("health", (_req, res) => {
 });
 router.use("/categories", categoryRoutes); // /api/categories...
 router.use("/products", productRoutes); // /api/products...
+router.use("/account", accountRoutes); // /api/account...
 
 export default router;
 // Next: Step 6 (start the server) -> server.
