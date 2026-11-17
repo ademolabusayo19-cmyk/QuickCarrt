@@ -4,6 +4,8 @@
 
 import { PromoCode } from "../models/PromoCode";
 import { promoCodes } from "./promoCodes";
+import { Order } from "../models/Order";
+import { Counter } from "../models/Counter";
 import mongoose, { Types } from "mongoose";
 import { Category } from "../models/Category";
 import { Product } from "../models/Product";
@@ -24,6 +26,8 @@ export const seedDatabase = async () => {
     Product.deleteMany({}),
     User.deleteMany({}),
     PromoCode.deleteMany({}),
+    Order.deleteMany({}),
+    Counter.deleteMany({}), // so the next order is #QC-1042 again
   ]);
 
   // 2. Save the categories, then remember each one's id by slug: "electronics" -> ObjectId(...)
@@ -84,7 +88,7 @@ export const seedDatabase = async () => {
   // pre("save") hook, which hashes the passwords. insertMany would store them as plain text!
   const savedUsers = await User.create(demoUsers());
 
-  // 7. Save the promo codes (insertMany is fine here: promo codes have no save hooks)
+  // 7. Save the promo codes
   const savedPromoCodes = await PromoCode.insertMany(promoCodes);
 
   // 8. A summary for whoever ran the seed
