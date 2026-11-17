@@ -2,6 +2,8 @@
 // fills the database with demo data: npm run seed
 // Running it again wipes the demo collections and starts fresh, so it's always safe to re-run
 
+import { PromoCode } from "../models/PromoCode";
+import { promoCodes } from "./promoCodes";
 import mongoose, { Types } from "mongoose";
 import { Category } from "../models/Category";
 import { Product } from "../models/Product";
@@ -21,6 +23,7 @@ export const seedDatabase = async () => {
     Category.deleteMany({}),
     Product.deleteMany({}),
     User.deleteMany({}),
+    PromoCode.deleteMany({}),
   ]);
 
   // 2. Save the categories, then remember each one's id by slug: "electronics" -> ObjectId(...)
@@ -81,11 +84,15 @@ export const seedDatabase = async () => {
   // pre("save") hook, which hashes the passwords. insertMany would store them as plain text!
   const savedUsers = await User.create(demoUsers());
 
-  // 7. A summary for whoever ran the seed
+  // 7. Save the promo codes (insertMany is fine here: promo codes have no save hooks)
+  const savedPromoCodes = await PromoCode.insertMany(promoCodes);
+
+  // 8. A summary for whoever ran the seed
   return {
     categories: savedCategories.length,
     products: savedProducts.length,
     users: savedUsers.length,
+    promoCodes: savedPromoCodes.length,
     withoutPhotos: savedProducts
       .filter((product) => product.images.length === 0)
       .map((product) => product.name),
@@ -100,7 +107,7 @@ const runSeed = async () => {
     const result = await seedDatabase();
 
     console.log(
-      `Seeded ${result.categories} categories, ${result.products} products and ${result.users} users`,
+      `Seeded ${result.categories} categories, ${result.products} products, ${result.users} users and ${result.promoCodes} promo codes`,
     );
 
     if (result.withoutPhotos.length > 0) {
