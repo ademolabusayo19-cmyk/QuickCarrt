@@ -205,3 +205,17 @@ export type OrderResponse = {
   canCancel: boolean;
   cancelDeadline: string;
 };
+
+// STEP 40: Order History (server: getMyOrders in orderController.ts)
+
+// GET /api/orders -> my orders + the numbers on the tabs
+export type MyOrdersResponse = {
+  orders: Order[];
+  counts: {
+    all: number;
+    "in-progress": number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+};
