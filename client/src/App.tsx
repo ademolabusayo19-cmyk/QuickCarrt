@@ -36,48 +36,49 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Everyone can access this pages */}
+        {/* Everyone can access these pages */}
         <Route element={<Mainlayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-
           <Route path="/product/:productId" element={<ProductDetailsPage />} />
 
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          {/* Pages that need a login: shoppers who are not looged in */}
 
-          <Route path="/verify-email" element={<VerifyPageEmail />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          {/* Pages that need a login: shoppers who are logged in */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/verify-email" element={<VerifyPageEmail />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
 
-          <Route
-            path="/order-confirmation/:orderId"
-            element={<OrderConfimationPage />}
-          />
+            <Route
+              path="/order-confirmation/:orderId"
+              element={<OrderConfimationPage />}
+            />
 
-          {/* Account pages: account menuon the left*/}
-          <Route path="/account" element={<AccountLayout />}>
-            <Route index element={<AccountOverviewPage />} />
-            <Route path="orders" element={<OrderHistoryPage />} />
-            <Route path="addresses" element={<AddressesPage />} />
-            <Route path="saved" element={<SavedItemsPage />} />
-            <Route path="settings" element={<AccountSettingsPage />} />
+            {/* Account pages: account menu on the left */}
+            <Route path="/account" element={<AccountLayout />}>
+              <Route index element={<AccountOverviewPage />} />
+              <Route path="orders" element={<OrderHistoryPage />} />
+              <Route path="addresses" element={<AddressesPage />} />
+              <Route path="saved" element={<SavedItemsPage />} />
+              <Route path="settings" element={<AccountSettingsPage />} />
+            </Route>
+
+            <Route
+              path="/account/orders/:orderId"
+              element={<OrderDetailsPage />}
+            />
           </Route>
-
-          <Route
-            path="/account/orders/:orderId"
-            element={<OrderDetailsPage />}
-          />
 
           {/* Shipping, returns, FAQs, About, Terms, Privacy */}
           {/* {InforPages.map((page) => (
@@ -87,30 +88,31 @@ function App() {
               element={<InfoPages page={page} />}
             />
           ))} */}
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-        {/* Admin login: no layout */}
 
+        {/* Admin login: no layout */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
 
-        {/* Admin pages: admin menu + top bar, no store header or footer. omly admins get */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="products" element={<AdminProductsPage />} />
-          <Route path="products/new" element={<AdminProductFormPage />} />
-          <Route
-            path="products/:productId/edit"
-            element={<AdminProductFormPage />}
-          />
-          <Route path="orders" element={<AdminOrdersPage />} />
+        {/* Admin pages: only admins get in */}
+        <Route element={<ProtectedRoute adminOnly />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/new" element={<AdminProductFormPage />} />
+            <Route
+              path="products/:productId/edit"
+              element={<AdminProductFormPage />}
+            />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="customers" element={<AdminCustomersPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="settings" element={<AdminSettingsPage />} />
 
-          <Route path="customers" element={<AdminCustomersPage />} />
-
-          <Route path="categories" element={<AdminCategoriesPage />} />
-
-          <Route path="settings" element={<AdminSettingsPage />} />
-          {/* Any other admin address shows the 404 page inside the admin layout */}
-          <Route path="*" element={<NotFoundPage />} />
+            {/* Any other admin address shows the 404 page inside the admin layout */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

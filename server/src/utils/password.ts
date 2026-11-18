@@ -1,30 +1,29 @@
-// password.ts server/src/utils/password.ts
-// The password rules from the registration and reset screens, in one place.
+// password.ts client/src/utils/password.ts
+// The password rules, shared by the register page (STEP 31) and the reset password page (STEP 37).
+// (In its own file, not in PasswordStrength.tsx: React's live reload works best when a .tsx file only exports components.)
 
-// STEP 19 (part 1): Password rules
+// STEP 31 (part 4): Password rules
 
-import { AppError } from "./AppError";
+// The first 3 are REQUIRED by the server (server/src/utils/password.ts). The symbol only makes it stronger.
+export const PASSWORD_RULES = [
+  {
+    label: "At least 8 characters",
+    test: (password: string) => password.length >= 8,
+  },
+  {
+    label: "At least one uppercase (A-Z)",
+    test: (password: string) => /[A-Z]/.test(password),
+  },
+  {
+    label: "At least one number (0-9)",
+    test: (password: string) => /\d/.test(password),
+  },
+  {
+    label: "At least one symbol (@$!%*?)",
+    test: (password: string) => /[^A-Za-z0-9]/.test(password),
+  },
+];
 
-// 8+ characters, an uppercase letter and a number.
-// (?=.*[A-Z]) = "somewhere there is an A-Z", (?=.*\d) = "somewhere there is a 0-9", .{8,} = 8 or more characters
-const PASSWORD_RULE = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-// Throws a 400 with a friendly message if the new password breaks a rule; otherwise gives it back.
-// (Returning it as a string tells TypeScript "this is definitely a string now".)
-export const checkNewPassword = (
-  password: unknown,
-  confirmPassword: unknown,
-): string => {
-  if (typeof password !== "string" || !PASSWORD_RULE.test(password)) {
-    throw new AppError(
-      400,
-      "Password must be at least 8 characters with one uppercase letter (A-Z) and one number (0-9).",
-    );
-  }
-
-  if (password !== confirmPassword) {
-    throw new AppError(400, "Passwords do not match.");
-  }
-
-  return password;
-};
+// true when the password passes the server's 3 required rules
+export const isPasswordValid = (password: string) =>
+  PASSWORD_RULES.slice(0, 3).every((rule) => rule.test(password));
