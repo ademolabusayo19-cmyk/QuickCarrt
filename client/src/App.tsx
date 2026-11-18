@@ -53,8 +53,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordPage />}
+          />
           {/* Pages that need a login: shoppers who are logged in */}
           <Route element={<ProtectedRoute />}>
             <Route path="/verify-email" element={<VerifyPageEmail />} />
