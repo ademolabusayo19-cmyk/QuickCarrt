@@ -57,7 +57,7 @@ const OrderDetailsPage = () => {
     return (
       <div
         aria-busy="true"
-        className="mx-auto my-10 h-96 max-w-[calc(90rem-6rem)] animate-pulse rounded-3xl bg-surface shadow-card"
+        className="mx-auto my-10 h-96 max-w-336 animate-pulse rounded-3xl bg-surface shadow-card"
       />
     );
   }

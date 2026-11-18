@@ -15,7 +15,7 @@ import orderRoutes from "./orderRoutes";
 
 const router = Router();
 // Get /api/health: a quick check that the API is running
-router.get("health", (_req, res) => {
+router.get("/health", (_req, res) => {
   res.json({ status: "ok", message: "Quickcart API is running" });
 });
 router.use("/categories", categoryRoutes); // /api/categories...
