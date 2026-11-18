@@ -31,6 +31,7 @@ export type Address = {
 };
 
 // The logged-in user. The server never sends the password or the secret tokens (User.toJSON, server STEP 17).
+
 export type User = {
   _id: string;
   firstName: string;
@@ -41,7 +42,8 @@ export type User = {
   isEmailVerified: boolean;
   addresses: Address[];
   savedItems: string[]; // product ids
-  createdAt: string; // dates arrive as text in JSON: "2026-11-15T16:09:36.218Z"
+  createdAt: string; // dates arrive as text in JSON
+  passwordChangedAt?: string; // "Password last updated ..." (STEP 39)
 };
 
 // POST /api/auth/login and /register -> { token, user }
