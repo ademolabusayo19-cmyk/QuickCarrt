@@ -17,8 +17,8 @@ import { users } from "./users";
 const RATING_SHARE = [
   { minRating: 4.7, shares: [80, 14, 4, 1, 1] },
   { minRating: 4.2, shares: [65, 22, 8, 3, 2] },
-  { minRating: 3.7, shares: [50, 20, 12, 6, 4] },
-  { minRating: 0, shares: [35, 30, 10, 10, 15] },
+  { minRating: 4.0, shares: [50, 28, 12, 6, 4] },
+  { minRating: 0, shares: [35, 30, 18, 10, 7] },
 ];
 
 // makeRatingCount(4.8, 248) -> [199, 35, 10, 2, 2] (adds up to exactly 248)
